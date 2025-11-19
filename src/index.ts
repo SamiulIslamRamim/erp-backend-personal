@@ -1,4 +1,5 @@
 // index.js
+import { middleware } from "#middlewares/middlewares.js";
 import express from "express";
 const app = express();
 const port = "3000";

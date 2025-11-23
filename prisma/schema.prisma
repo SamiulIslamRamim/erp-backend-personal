@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client"
   output   = "../generated/prisma"
@@ -11,4 +5,116 @@ generator client {
 
 datasource db {
   provider = "postgresql"
+}
+
+
+enum Gender {
+  Male
+  Female
+  Other
+}
+
+enum MaritalStatus {
+  Single
+  Married
+  Divorced
+  Widowed
+  Separated
+}
+
+model presentAddress {
+  id                        String    @id @default(uuid())
+  division                  String
+  district                  String
+  upazilaOrThana            String
+  postOffice                String
+  postCode                  String
+  block                     String
+  houseNoOrVillage          String
+  roadNo                    String?   @default("n/a")
+  createdAt                 DateTime  @default(now())
+  employeePresentAddress    Employee? @relation("employeePresentAddress")
+}
+
+model permanentAddress {
+  id                        String    @id @default(uuid())
+  division                  String
+  district                  String
+  upazilaOrThana            String
+  postOffice                String
+  postCode                  String
+  block                     String
+  houseNoOrVillage          String
+  roadNo                    String?   @default("n/a")
+  createdAt                 DateTime  @default(now())
+  employeePermanenttAddress Employee? @relation("employeePermanentAddress")
+}
+
+model ContactInformation {
+  id                        String    @id @default(uuid())
+  fullName                  String    @default("n/a")
+  dateOfBirth               DateTime  @default(now())
+  gender                    String    @default("n/a")
+  occupation                String    @default("n/a")
+  nid                       String    @default("n/a")
+  mobileNumber              String    @default("n/a")
+  email                     String    @default("n/a")
+  createdAt                 DateTime  @default(now())
+  employeeSpouseInformation Employee? @relation("spouseInformation")
+  employeeEmergencyContact  Employee? @relation("emergencyContact")
+}
+
+model AdditionalInformation {
+  id               String         @id @default(uuid())
+  fatherName       String?        @default("n/a")
+  motherName       String?        @default("n/a")
+  nationalId       String?        @default("n/a")
+  placeOfBirth     String?        @default("n/a")
+  maritalStatus    MaritalStatus? @default(Single)
+  eTIN             String?        @default("n/a")
+  program          String?        @default("n/a")
+  unit             String?        @default("n/a")
+  prlDate          DateTime?      @default(now())
+  dateofRegularity DateTime?      @default(now())
+  createdAt        DateTime       @default(now())
+  employee         Employee?
+}
+
+
+model Employee {
+  id                     String                @id @default(uuid())
+  fullName               String
+  imageUrl               String
+  officeEmail            String                @unique
+  personalEmail          String                @unique
+  personalNumber         String
+  officeNumber           String
+  employeeType           String
+  employeeStatus         String
+  nationality            String
+  disability             Boolean
+  gender                 Gender
+  religion               String
+  joiningDesignation     String
+  currentDesignation     String
+  dateOfBirth            DateTime              @default(now())
+  dateOfConfirmation     DateTime              @default(now())
+  bankName               String
+  branchName             String
+  accountNumber          String
+  walletType             String
+  walletNumber           String
+  createdAt              DateTime              @default(now())
+  updatedAt              DateTime              @updatedAt
+  // Relations
+  addtionalInformationId String                @unique
+  additionalInformation  AdditionalInformation @relation(fields: [addtionalInformationId], references: [id], onDelete: Cascade)
+  presentAddressId       String                @unique
+  presentAddress         presentAddress        @relation(name: "employeePresentAddress", fields: [presentAddressId], references: [id], onDelete: Cascade)
+  permanentAddressId     String                @unique
+  permanentAddress       permanentAddress      @relation(name: "employeePermanentAddress", fields: [permanentAddressId], references: [id], onDelete: Cascade)
+  spouseInformationId    String?               @unique
+  spouseInformation      ContactInformation?   @relation(name: "spouseInformation", fields: [spouseInformationId], references: [id], onDelete: Cascade)
+  emergencyContactId     String                @unique
+  emergencyContact       ContactInformation    @relation(name: "emergencyContact", fields: [emergencyContactId], references: [id], onDelete: Cascade)
 }
